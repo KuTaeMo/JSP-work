@@ -1,0 +1,23 @@
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="com.cos.test1.config.DBConn"%>
+<%@page import="java.sql.Connection"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<%
+	String sql="INSERT INTO users(username, password,email) VALUES('love','1234','love@nate.com')";
+	Connection conn=DBConn.getConnection();
+	PreparedStatement pstmt=
+			conn.prepareStatement(sql);
+	int result=pstmt.executeUpdate();
+	%>
+	<h3>result</h3>
+</body>
+</html>
