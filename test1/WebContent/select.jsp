@@ -1,3 +1,4 @@
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="com.cos.test1.config.DBConn"%>
@@ -17,15 +18,26 @@
 	PreparedStatement pstmt=
 			conn.prepareStatement(sql);
 	ResultSet rs=pstmt.executeQuery();
-	rs.next();
-	int id=rs.getInt("id");
-	String username=rs.getString("username");
-	String password=rs.getString("password");
-	String email=rs.getString("email");
-	%>
-	<h3>id:<%=id %></h3>
-	<h3>username:<%=username %></h3>
-	<h3>password:<%=password %></h3>
-	<h3>email:<%=email %></h3>
+	
+	ArrayList<Object> list=new ArrayList();
+	int id=0;
+	String username="";
+	String password="";
+	String email="";
+	while(rs.next()==false){
+		id=rs.getInt("id");
+		 username=rs.getString("username");
+		 list.add(username);
+		 password=rs.getString("password");
+		 list.add(password);
+		 email=rs.getString("email");
+		 list.add(email);
+	}
+%>
+
+		<h3>id:<%=id %></h3>
+		<h3>username:<%=username %></h3>
+		<h3>password:<%=password %></h3>
+		<h3>email:<%=email %></h3>
 </body>
 </html>
