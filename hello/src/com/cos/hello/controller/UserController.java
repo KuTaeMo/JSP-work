@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class UserController extends HttpServlet{
 	
@@ -17,28 +18,80 @@ public class UserController extends HttpServlet{
 	//http://localhost:8000/hello/user
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doProcess(req, resp);
+		try {
+			doProcess(req, resp);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doProcess(req, resp);
+		try {
+			doProcess(req, resp);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		System.out.println("UserController 실행됨");
 		//http://localhost:8000/hello/user?gubun=login
 		String gubun=req.getParameter("gubun");	// /hello/front
 		System.out.println(gubun);
 		
+		route(gubun,req,resp);
+	}
+	
+	private void route(String gubun,HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		if(gubun.equals("login")) {
-			resp.sendRedirect("auth/login.jsp");//한번 더 request
+			resp.sendRedirect("auth/login.jsp");//한번 더 requestz
 		}else if(gubun.equals("join")) {
 			resp.sendRedirect("auth/join.jsp");//한번 더 request
 		}else if(gubun.equals("selectOne")) {
 			resp.sendRedirect("user/selectOne.jsp");//한번 더 request
 		}else if(gubun.equals("updateOne")) {
 			resp.sendRedirect("user/updateOne.jsp");//한번 더 request
+		}else if(gubun.equals("joinProc")) {	// 회원가입 수행해줘
+			// 데이터 원형  username=ssar&password=1234&email=ssar@nate.com
+			
+			// 1번 form의 input 태그에 있는 3가지 값 username, password, email 받기
+			
+			// getParameter() 함수는 get방식의 데이터와 post방식의 데이터를 다 받을 수 있다.
+			// 단 post방식에서는 데이터 타입이 x-www-form-urlencoded 방식만 받을 수 있음.
+			String username=req.getParameter("username"); 
+			String password=req.getParameter("password"); 
+			String email=req.getParameter("email"); 
+			
+			System.out.println("=======joinProc=======");
+			System.out.println(username);
+			System.out.println(password);
+			System.out.println(email);
+			System.out.println("=======joinProc=======");
+			// 2번 DB에 연결해서 3가지 값을 INSERT 하기 - 생략	
+			
+			// 3번 INSERT가 정상적으로 되었다면 index.jsp를 응답(메인 페이지로 보내기)!!
+			resp.sendRedirect("index.jsp");
+		}else if(gubun.equals("loginProc")) {
+			// 1번 전달되는 값 받기
+			String username=req.getParameter("username");
+			String password=req.getParameter("password");
+			
+			System.out.println("=======loginProc=======");
+			System.out.println(username);
+			System.out.println(password);
+			System.out.println("=======loginProc=======");
+			
+			// 2번 데이터베이스 값이 있는지 select 해서 확인 - 생략
+			// 3번 
+			HttpSession session = req.getSession();
+			session.setAttribute("sessionKey","9998");
+			resp.setHeader("Set-Cookie", "sessionKey=9998");
+			resp.setHeader("cookie", "9998"); 	//헤더에 담기
+			// 4번 index.jsp 페이지로 이동
+			resp.sendRedirect("index.jsp");
 		}
 	}
 }
