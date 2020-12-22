@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.DeptDao;
+
 public class UserController extends HttpServlet{
 	
 	//req와 res는 톰켓이 만들어줍니다. (클라이언트의 요청이 있을 때 마다)
 	//req는 BufferedReader할 수 있는 ByteStream
 	//res는 BufferedWriter할 수 있는 ByteStream
-	
+
 	//http://localhost:8000/hello/user
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -50,8 +52,8 @@ public class UserController extends HttpServlet{
 			resp.sendRedirect("auth/login.jsp");//한번 더 requestz
 		}else if(gubun.equals("join")) {
 			resp.sendRedirect("auth/join.jsp");//한번 더 request
-		}else if(gubun.equals("selectOne")) {
-			resp.sendRedirect("user/selectOne.jsp");//한번 더 request
+//	}	else if(gubun.equals("selectOne")) {
+//			resp.sendRedirect("user/selectOne.jsp");//한번 더 request
 		}else if(gubun.equals("updateOne")) {
 			resp.sendRedirect("user/updateOne.jsp");//한번 더 request
 		}else if(gubun.equals("joinProc")) {	// 회원가입 수행해줘
@@ -64,6 +66,16 @@ public class UserController extends HttpServlet{
 			String username=req.getParameter("username"); 
 			String password=req.getParameter("password"); 
 			String email=req.getParameter("email"); 
+			
+			Users user=Users.builder()
+					.username(username)
+					.password(password)
+					.email(email)
+					.build();
+			DeptDao dao=new DeptDao();
+			dao.추가(username, password, email);
+			HttpSession session=req.getSession();
+			session.setAttribute("sessionUser", user);
 			
 			System.out.println("=======joinProc=======");
 			System.out.println(username);
@@ -86,12 +98,22 @@ public class UserController extends HttpServlet{
 			
 			// 2번 데이터베이스 값이 있는지 select 해서 확인 - 생략
 			// 3번 
-			HttpSession session = req.getSession();
-			session.setAttribute("sessionKey","9998");
-			resp.setHeader("Set-Cookie", "sessionKey=9998");
-			resp.setHeader("cookie", "9998"); 	//헤더에 담기
+//			HttpSession session = req.getSession();
+//			session.setAttribute("sessionKey","9998");
+//			resp.setHeader("Set-Cookie", "sessionKey=9998");
+//			resp.setHeader("cookie", "9998"); 	//헤더에 담기
 			// 4번 index.jsp 페이지로 이동
 			resp.sendRedirect("index.jsp");
+		}else if(gubun.equals("selectOne")) {
+			HttpSession session=req.getSession();
+			if(session.getAttribute("sessionUser")!=null) {
+				Users user=(Users)session.getAttribute("sessionUser");
+				System.out.println("인증되었습니다.");
+				System.out.println("user : "+user);
+				resp.sendRedirect("user/selectOne.jsp");
+			}else {
+				System.out.println("인증되지 않았습니다.");
+			}
 		}
 	}
 }
