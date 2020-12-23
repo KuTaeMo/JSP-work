@@ -2,6 +2,7 @@ package com.cos.hello.controller;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 //javax로 시작하는 패키지는 톰켓이 들고있는 라이브러리
 import javax.servlet.http.HttpServlet;
@@ -105,15 +106,22 @@ public class UserController extends HttpServlet{
 			// 4번 index.jsp 페이지로 이동
 			resp.sendRedirect("index.jsp");
 		}else if(gubun.equals("selectOne")) {
+			String result;
 			HttpSession session=req.getSession();
 			if(session.getAttribute("sessionUser")!=null) {
 				Users user=(Users)session.getAttribute("sessionUser");
+				result="인증되었습니다.";
 				System.out.println("인증되었습니다.");
 				System.out.println("user : "+user);
-				resp.sendRedirect("user/selectOne.jsp");
+
 			}else {
 				System.out.println("인증되지 않았습니다.");
+				result="인증되지않았습니다.";
 			}
+			//request 유지시키기
+			req.setAttribute("result", result);
+			RequestDispatcher dis= req.getRequestDispatcher("user/selectOne.jsp");
+			dis.forward(req, resp);
 		}
 	}
 }
