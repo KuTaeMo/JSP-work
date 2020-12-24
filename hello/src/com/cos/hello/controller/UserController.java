@@ -1,6 +1,8 @@
 package com.cos.hello.controller;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import dao.DeptDao;
+import config.DBConnection;
 
 public class UserController extends HttpServlet{
 	
@@ -73,8 +75,7 @@ public class UserController extends HttpServlet{
 					.password(password)
 					.email(email)
 					.build();
-			DeptDao dao=new DeptDao();
-			dao.추가(username, password, email);
+			추가(username, password, email);
 			HttpSession session=req.getSession();
 			session.setAttribute("sessionUser", user);
 			
@@ -122,6 +123,22 @@ public class UserController extends HttpServlet{
 			req.setAttribute("result", result);
 			RequestDispatcher dis= req.getRequestDispatcher("user/selectOne.jsp");
 			dis.forward(req, resp);
+		}
+	}
+	public void 추가(String username, String password, String email) {
+		String sql="INSERT INTO users(username,password,email) VALUES (?,?,?)";
+		Connection conn=DBConnection.getConnection();
+		//인터페이스가 적용되어 있는 버퍼
+		try {
+			PreparedStatement pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1,username);
+			pstmt.setString(2,password);
+			pstmt.setString(3,email);
+			int result=pstmt.executeUpdate(); // 변경된 row count를 리턴, - 값은 오류시에만 리턴
+			System.out.println("result : "+result);
+			System.out.println("DB 입력완료");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
