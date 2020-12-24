@@ -1,4 +1,4 @@
-package com.cos.hello.controller;
+package com.cos.hello.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
